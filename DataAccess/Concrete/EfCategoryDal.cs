@@ -9,8 +9,7 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Concrete
 {
-    public class EfUserDal :EfEntityRepositoryBase<User,ChineseBazaarContext>,IUserDal
+    public class EfCategoryDal :EfEntityRepositoryBase<Category,ChineseBazaarContext> ,ICategoryDal
     {
-
     }
 }
