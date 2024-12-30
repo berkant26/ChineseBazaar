@@ -1,6 +1,6 @@
 ﻿using Business.Abstract;
 using DataAccess.Abstract;
-using Entities.Models;
+using Entities.Concrete;
 
 namespace Business.Concrete
 {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 
-namespace Entities.Models;
+namespace Entities.Concrete;
 
 public partial class ChineseBazaarContext : DbContext
 {
@@ -18,6 +18,8 @@ public partial class ChineseBazaarContext : DbContext
     public virtual DbSet<Category> Categories { get; set; }
 
     public virtual DbSet<Product> Products { get; set; }
+
+    public virtual DbSet<Productİmage> Productİmages { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
 
@@ -41,6 +43,11 @@ public partial class ChineseBazaarContext : DbContext
             entity.Property(e => e.CreatedDate).HasColumnType("datetime");
             entity.Property(e => e.Name).HasMaxLength(50);
             entity.Property(e => e.Price).HasColumnType("money");
+        });
+
+        modelBuilder.Entity<Productİmage>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Productİ__3214EC0764E1E139");
         });
 
         modelBuilder.Entity<User>(entity =>

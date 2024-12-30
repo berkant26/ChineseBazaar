@@ -4,8 +4,7 @@ using Entities.Concrete;
 
 namespace DataAccess.Concrete
 {
-    public class EfProductDal : EfEntityRepositoryBase<Product,ChineseBazaarContext>,IProductDal
+    public class EfProductImageDal : EfEntityRepositoryBase<Productİmage, ChineseBazaarContext>, IProductImageDal
     {
-
     }
 }

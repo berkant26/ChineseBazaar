@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace Business.Abstract
 {
-    public interface IUserService
+    public interface IProductImageService
     {
-        void Add(User user);
+        List<Productİmage> GetImagesByProductId(int productId);
     }
 }

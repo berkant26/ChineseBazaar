@@ -1,5 +1,5 @@
 ﻿using Business.Abstract;
-using Entities.Models;
+using Entities.Concrete;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,10 +14,22 @@ namespace WebAPI.Controllers
         {
             _productService = productService;
         }
-        [HttpGet]
+        [HttpGet("getall")]
         public List<Product> GetAllProducts()
         {
             return _productService.GetAll();
+        }
+        [HttpGet("getlistbycategoryId")]
+        public List<Product> GetProductByCategory(int categoryId)
+        {
+            return _productService.GetProductByCategoryId(categoryId);
+
+        }
+        [HttpGet("getProductImages")]
+        public List<Productİmage> GetProductImages(int productId)
+        {
+            return _productService.GetProductImages(productId);
+
         }
     }
 }

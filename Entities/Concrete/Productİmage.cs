@@ -4,9 +4,11 @@ using System.Collections.Generic;
 
 namespace Entities.Concrete;
 
-public partial class Category : IEntity
+public partial class Productİmage : IEntity
 {
     public int Id { get; set; }
 
-    public string? CategoryName { get; set; }
+    public int? ProductId { get; set; }
+
+    public string? İmageUrl { get; set; }
 }
