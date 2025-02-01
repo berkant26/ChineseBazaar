@@ -15,8 +15,9 @@ namespace WebAPI.Controllers
             _categorySerivce = categoryService;
         }
 
-        [HttpGet]
-        public List<Category> GetCategories() { 
+        [HttpGet("getAll")]
+
+        public List<Category> GetAllCategories() { 
         
             return _categorySerivce.GetCategories();
         

@@ -14,7 +14,7 @@ public partial class Product : IEntity
 
     public string? Description { get; set; }
 
-    public string? StockAmount { get; set; }
+    public int? StockAmount { get; set; }
 
     public int? CategoryId { get; set; }
 

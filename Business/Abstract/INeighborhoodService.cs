@@ -7,10 +7,9 @@ using System.Threading.Tasks;
 
 namespace Business.Abstract
 {
-    public interface IUserService
+    public interface INeighborhoodService
     {
-        void Add(User user);
-        User GetByMail(string email);
-        List<OperationClaim> GetClaims(User user);
+        Neighborhood GetNeighborhood(int id);
+        List<Neighborhood> GetNeighborhoods(int districtId);
     }
 }

@@ -3,7 +3,6 @@ namespace ChineseBazaar
 open System
 open System.Collections.Generic
 open System.IO
-open System.Linq
 open System.Threading.Tasks
 open Microsoft.AspNetCore
 open Microsoft.AspNetCore.Builder

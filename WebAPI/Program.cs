@@ -1,8 +1,14 @@
 using Business.Abstract;
 using Business.Concrete;
+using Core.Helper;
+using Core.Security.Jwt;
 using DataAccess.Abstract;
 using DataAccess.Concrete;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.AspNetCore.Hosting;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,7 +22,22 @@ builder.WebHost.ConfigureKestrel(serverOptions =>
     });
 });
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+// Add JWT Authentication
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidIssuer = builder.Configuration["TokenOptions:Issuer"],
+            ValidAudience = builder.Configuration["TokenOptions:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["TokenOptions:SecurityKey"]))
+        };
+    });
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IProductService, ProductManager>();
@@ -24,8 +45,19 @@ builder.Services.AddScoped<IProductDal, EfProductDal>();
 builder.Services.AddScoped<ICategoryDal, EfCategoryDal>();
 builder.Services.AddScoped<ICategoryService, CategoryManager>();
 builder.Services.AddScoped<IProductImageDal, EfProductImageDal>();
-builder.Services.AddScoped<IProductImageService,ProductImagesManager>();
+builder.Services.AddScoped<IProductImageService, ProductImagesManager>();
+builder.Services.AddScoped<IUserDal, EfUserDal>();
+builder.Services.AddScoped<IUserService, UserManager>();
+builder.Services.AddScoped<IAuthService, AuthManager>();
+builder.Services.AddScoped<IDistrictService, DistrictManager>();
+builder.Services.AddScoped<ICityService, CityManager>();
+builder.Services.AddScoped<INeighborhoodService, NeighborhoodManager>();
 
+builder.Services.AddScoped<ICityDal, EfCityDal>();
+builder.Services.AddScoped<IDistrictDal, EfDistrict>();
+builder.Services.AddScoped<INeighborhoodDal, EfNeighborhood>();
+
+builder.Services.AddScoped<ITokenHelper, JwtHelper>();
 
 builder.Services.AddCors(options =>
 {
@@ -36,13 +68,14 @@ builder.Services.AddCors(options =>
                .AllowAnyHeader();
     });
 });
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+app.UseStaticFiles();
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
-
     app.UseSwagger();
     app.UseSwaggerUI();
 }
@@ -50,8 +83,12 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseCors("AllowAll");
 
+// Add Authentication middleware
+app.UseAuthentication();  // This will add authentication to the pipeline
 app.UseAuthorization();
-app.UseStaticFiles();
+var env = app.Services.GetRequiredService<IHostEnvironment>();
+
+ImageUploader.Initialize(env);
 app.MapControllers();
 
 app.Run();

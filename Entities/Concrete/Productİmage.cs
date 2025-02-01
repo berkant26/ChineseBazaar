@@ -10,5 +10,5 @@ public partial class Productİmage : IEntity
 
     public int? ProductId { get; set; }
 
-    public string? İmageUrl { get; set; }
+    public string? ImageUrl { get; set; }
 }

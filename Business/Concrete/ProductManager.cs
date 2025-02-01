@@ -18,9 +18,26 @@ namespace Business.Concrete
             _productDal.Add(product);
         }
 
+        public void Delete(Product productId)
+        {
+            
+             _productDal.Delete(productId);
+        }
+
+        public void DeleteImage(Productİmage product)
+        {
+            _productImageDal.Delete(product);
+        }
+
         public List<Product> GetAll()
         {
             return  _productDal.GetList().ToList(); 
+        }
+
+        public Product GetById(int id)
+        {
+            var product = _productDal.Get(p=> p.Id == id);
+            return product;
         }
 
         public List<Product> GetProductByCategoryId(int productId)
@@ -31,6 +48,11 @@ namespace Business.Concrete
         public List<Productİmage> GetProductImages(int productId)
         {
             return _productImageDal.GetList(img => img.ProductId == productId).ToList();
+        }
+
+        public void Update(Product product)
+        {
+            _productDal.Update(product);
         }
     }
 }

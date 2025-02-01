@@ -18,9 +18,26 @@ namespace Business.Concrete
         }
         public void Add(User user)
         {
+            var existingUser = _userDal.Get(u => u.Email == user.Email);
+            if (existingUser != null)
+            {
+                throw new Exception("Bu mail adresi kullaniliyor");
+            }
             _userDal.Add(user);
 
         }
+        
 
+        
+
+        public List<OperationClaim> GetClaims(User user)
+        {
+            return _userDal.GetClaims(user);
+        }
+
+        User IUserService.GetByMail(string email)
+        {
+            return _userDal.Get(u => u.Email == email);
+        }
     }
 }

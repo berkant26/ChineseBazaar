@@ -10,5 +10,6 @@ namespace Business.Abstract
     public interface IProductImageService
     {
         List<Productİmage> GetImagesByProductId(int productId);
+        public void Add(Productİmage productİmage);
     }
 }
