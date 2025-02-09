@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Hosting;
+using Serilog;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,6 +22,22 @@ builder.WebHost.ConfigureKestrel(serverOptions =>
         listenOptions.UseHttps();
     });
 });
+
+Log.Logger = new LoggerConfiguration()
+   // .WriteTo.Console()
+    .WriteTo.File("logs/log.txt", rollingInterval: RollingInterval.Day)
+    .CreateLogger();
+
+builder.Services.AddLogging(logging =>
+{
+    logging.AddSerilog();
+});
+builder.Services.AddRazorPages();
+
+
+// Add logging to the DI container
+builder.Logging.AddSerilog();
+
 builder.Services.AddControllers();
 
 // Add JWT Authentication
@@ -56,6 +73,10 @@ builder.Services.AddScoped<INeighborhoodService, NeighborhoodManager>();
 builder.Services.AddScoped<ICityDal, EfCityDal>();
 builder.Services.AddScoped<IDistrictDal, EfDistrict>();
 builder.Services.AddScoped<INeighborhoodDal, EfNeighborhood>();
+builder.Services.AddScoped<IOrderDal, EfOrderDal>();
+builder.Services.AddScoped<IOrderService, OrderManager>();
+builder.Services.AddScoped<IOrderItemsDal, EfOrderItemsDal>();
+builder.Services.AddScoped<IOrderItemService, OrderItemManager>();
 
 builder.Services.AddScoped<ITokenHelper, JwtHelper>();
 
@@ -82,7 +103,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors("AllowAll");
-
+app.UseMiddleware<RequestLoggingMiddleware>();
 // Add Authentication middleware
 app.UseAuthentication();  // This will add authentication to the pipeline
 app.UseAuthorization();

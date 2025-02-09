@@ -29,18 +29,22 @@ namespace Business.Concrete
 
         public User Login(UserForLoginDto userForLoginDto)
         {
-           
             var userToCheck = _userService.GetByMail(userForLoginDto.Email);
+
             if (userToCheck == null)
             {
+                return null;
             }
 
             if (!HashingHelper.VerifyPasswordHash(userForLoginDto.Password, userToCheck.PasswordHash, userToCheck.PasswordSalt))
             {
+                return null;
+
             }
 
             return userToCheck;
         }
+
 
         public User Register(UserForRegisterDto userForRegisterDto, string password)
         {

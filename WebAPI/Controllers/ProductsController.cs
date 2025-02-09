@@ -144,7 +144,18 @@ namespace WebAPI.Controllers
             _productService.Delete(product);
             return Ok("ürün silindi");
         }
+        [HttpPost("deleteProductImage")]
 
+        public IActionResult DeleteProductImage(List<Productİmage> productİmage)
+        {
+            foreach (var image in productİmage)
+            {
+                _productService.DeleteImage(image);
+
+
+            }
+            return Ok("ürün resmi silindi");
+        }
 
     }
 }

@@ -45,7 +45,7 @@ namespace WebAPI.Controllers
                 var userExists = _authService.UserExists(userForRegisterDto.Email);
                 if (!userExists)
                 {
-                    return BadRequest("Girisilemedi");
+                    return BadRequest("Kullanıcı Zaten Var");
                 }
 
                 var registerResult = _authService.Register(userForRegisterDto, userForRegisterDto.Password);

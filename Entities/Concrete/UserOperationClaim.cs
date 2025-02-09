@@ -1,9 +1,10 @@
-﻿using System;
+﻿using Entities.Abstract;
+using System;
 using System.Collections.Generic;
 
 namespace Entities.Concrete;
 
-public partial class UserOperationClaim
+public partial class UserOperationClaim : IEntity
 {
     public int Id { get; set; }
 

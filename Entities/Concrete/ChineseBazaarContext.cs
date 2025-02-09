@@ -27,6 +27,10 @@ public partial class ChineseBazaarContext : DbContext
 
     public virtual DbSet<OperationClaim> OperationClaims { get; set; }
 
+    public virtual DbSet<Order> Orders { get; set; }
+
+    public virtual DbSet<OrderItem> OrderItems { get; set; }
+
     public virtual DbSet<Product> Products { get; set; }
 
     public virtual DbSet<Productİmage> Productİmages { get; set; }
@@ -96,6 +100,17 @@ public partial class ChineseBazaarContext : DbContext
             entity.HasKey(e => e.Id).HasName("PK__Operatio__3214EC076EA20473");
 
             entity.Property(e => e.Name).HasMaxLength(50);
+        });
+
+        modelBuilder.Entity<Order>(entity =>
+        {
+            entity.Property(e => e.OrderDate).HasColumnType("datetime");
+            entity.Property(e => e.TotalPrice).HasColumnType("money");
+        });
+
+        modelBuilder.Entity<OrderItem>(entity =>
+        {
+            entity.Property(e => e.Price).HasColumnType("money");
         });
 
         modelBuilder.Entity<Product>(entity =>

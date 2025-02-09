@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Entities.Concrete;
 
-public partial class Product : IEntity
+public partial class Product : IEntity 
 {
     public int Id { get; set; }
 
