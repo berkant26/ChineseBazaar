@@ -1,9 +1,12 @@
 ﻿using Business.Abstract;
 using Entities.Concrete;
 using Entities.DTOs;
+using Iyzipay.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.Globalization;
 
 namespace WebAPI.Controllers
 {
@@ -14,50 +17,202 @@ namespace WebAPI.Controllers
         public IOrderService _orderService;
         public IOrderItemService _orderItemService;
         private IProductService _productService;
-
-
-        public OrderController(IOrderService orderService, IOrderItemService orderItemService, IProductService productService)
+        ChineseBazaarContext _context = new ChineseBazaarContext();
+        ICityService _cityService;
+        IDistrictService _districtService;
+        INeighborhoodService _neighborhoodService;
+        public OrderController(IOrderService orderService, IOrderItemService orderItemService, IProductService productService, ICityService cityService, IDistrictService districtService, INeighborhoodService neighborhoodService)
         {
             _orderService = orderService;
             _orderItemService = orderItemService;
-            _productService = productService;   
+            _productService = productService;
+            _cityService = cityService;
+            _districtService = districtService;
+            _neighborhoodService = neighborhoodService;
         }
-
-
-        [HttpGet("getUserOrders")]
-        public IActionResult Get(int userId)
+        [HttpGet("getAllOrders")]
+        
+        public async Task<IActionResult> GetAllOrders()
         {
-            // Siparişi al
-            var order = _orderService.GetOrder(userId);
+            var orders = _orderService.GetAllOrder();
 
-            if (order == null)
+            if (orders == null || !orders.Any())
             {
-                return BadRequest(new { message = "Sipariş bulunamadı" });
+                return BadRequest(new { message = "No orders found." });
             }
-
-            var orderItems = _orderItemService.GetOrderItems(order.Id);
-
-            // Kullanıcı adresini al
 
             var productNames = _productService.GetAll();
 
-            return Ok(new
+            // Prepare the response list
+            var response = new List<object>();
+
+            foreach (var order in orders)
             {
-                Order = new
+                // Fetch all items **only for this order**
+                var orderItems = _orderItemService.GetAllOrderItems()
+                    .Where(o => o.OrderId == order.Id)
+                    .ToList();
+
+                // Fetch user address **before constructing the response**
+                var address = await _context.Addresses
+                    .FirstOrDefaultAsync(a => a.UserId == order.UserId);
+
+                string cityName = "Unknown City";
+                string districtName = "Unknown District";
+                string neighborhood = "Unknown Neighborhood";
+                string firstName = address.FirstName;
+                string lastName = address.LastName;
+                string phoneNumber = address.PhoneNumber;
+                string fullAddress = address.AddressDescription;
+
+                if (address != null)
                 {
-                    order.Id,
-                    order.OrderDate,
-                    TotalPrice = order.TotalPrice // Hesaplanan toplam tutar
-                },
-                OrderItems = orderItems.Select(o => new
+                    cityName = await _context.Cities
+                        .Where(c => c.Id == address.CityId)
+                        .Select(c => c.Name)
+                        .FirstOrDefaultAsync() ?? "Unknown City";
+
+                    districtName = await _context.Districts
+                        .Where(d => d.Id == address.DistrictId)
+                        .Select(d => d.Name)
+                        .FirstOrDefaultAsync() ?? "Unknown District";
+
+                    neighborhood = await _context.Neighborhoods
+                        .Where(n => n.Id == address.NeighborhoodId)
+                        .Select(n => n.Name)
+                        .FirstOrDefaultAsync() ?? "Unknown Neighborhood";
+
+                   
+                }
+
+                // Construct the order response
+                var orderResponse = new
                 {
-                    ProductId = o.ProductId,
-                    ProductName = productNames.FirstOrDefault(p => p.Id == o.ProductId)?.Name, // Ürün adı
-                    o.Quantity, // Adet
-                    o.Price // Fiyat
-                }).ToList()
-            });
+                    Order = new
+                    {
+                        order.Id,
+                        order.OrderDate,
+                        TotalPrice = order.TotalPrice
+                    },
+                    OrderItems = orderItems.Select(o => new
+                    {
+                        ProductId = o.ProductId,
+                        ProductName = productNames.FirstOrDefault(p => p.Id == o.ProductId)?.Name,
+                        o.Quantity,
+                        o.Price,
+                        ProductDescription = productNames.FirstOrDefault(p => p.Id == o.ProductId)?.Description
+                    }).ToList(),
+                    UserAddress = new
+                    {
+                        City = cityName,
+                        District = districtName,
+                        Neighborhood = neighborhood,
+                        PhoneNumber= phoneNumber,
+                        FirstName = firstName,
+                        LastName = lastName,
+                        FullAddress = fullAddress
+
+                    }
+                };
+
+                response.Add(orderResponse);
+            }
+
+            return Ok(response);
         }
+
+
+
+
+
+
+
+
+
+        [HttpGet("getUserOrders")]
+        public async Task<IActionResult> GetUserOrders(int userId)
+        {
+            // Fetch all orders for the user
+            var orders = _orderService.GetAllUserOrder(userId);
+
+            if (orders == null || !orders.Any())
+            {
+                return BadRequest(new { message = "No orders found." });
+            }
+
+            var productNames = _productService.GetAll();
+
+            var response = new List<object>();
+
+            foreach (var order in orders)
+            {
+                // Fetch all items for the current order
+                var orderItems = _orderItemService.GetAllUserItems(order.Id);
+
+                // Fetch user address
+                var address = await _context.Addresses
+                    .FirstOrDefaultAsync(a => a.UserId == userId);
+
+                string cityName = "Unknown City";
+                string districtName = "Unknown District";
+                string neighborhood = "Unknown Neighborhood";
+                string firstName = address?.FirstName ?? "N/A";
+                string lastName = address?.LastName ?? "N/A";
+                string phoneNumber = address?.PhoneNumber ?? "N/A";
+                string fullAddress = address.AddressDescription;
+                if (address != null)
+                {
+                    cityName = await _context.Cities
+                        .Where(c => c.Id == address.CityId)
+                        .Select(c => c.Name)
+                        .FirstOrDefaultAsync() ?? "Unknown City";
+
+                    districtName = await _context.Districts
+                        .Where(d => d.Id == address.DistrictId)
+                        .Select(d => d.Name)
+                        .FirstOrDefaultAsync() ?? "Unknown District";
+
+                    neighborhood = await _context.Neighborhoods
+                        .Where(n => n.Id == address.NeighborhoodId)
+                        .Select(n => n.Name)
+                        .FirstOrDefaultAsync() ?? "Unknown Neighborhood";
+                }
+
+                // Construct the order response
+                var orderResponse = new
+                {
+                    Order = new
+                    {
+                        order.Id,
+                        order.OrderDate,
+                        TotalPrice = order.TotalPrice
+                    },
+                    OrderItems = orderItems.Select(o => new
+                    {
+                        ProductId = o.ProductId,
+                        ProductName = productNames.FirstOrDefault(p => p.Id == o.ProductId)?.Name,
+                        o.Quantity,
+                        o.Price,
+                        ProductDescription = productNames.FirstOrDefault(p => p.Id == o.ProductId)?.Description
+                    }).ToList(),
+                    UserAddress = new
+                    {
+                        City = cityName,
+                        District = districtName,
+                        Neighborhood = neighborhood,
+                        PhoneNumber = phoneNumber,
+                        FirstName = firstName,
+                        LastName = lastName,
+                        FullAddress = fullAddress
+                    }
+                };
+
+                response.Add(orderResponse);
+            }
+
+            return Ok(response);
+        }
+
 
 
 

@@ -41,17 +41,14 @@ public partial class ChineseBazaarContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=ChineseBazaar;Trusted_Connection=True;TrustServerCertificate=True;");
+        => optionsBuilder.UseSqlServer("Server=chinesebazaar.cd08460am6hi.eu-north-1.rds.amazonaws.com;Database=ChineseBazaar;User ID=admin;Password=bekobekO26;TrustServerCertificate=True;Encrypt=True;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Address>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Address__3214EC07DE0BE504");
-
             entity.ToTable("Address");
 
-            entity.Property(e => e.Id).ValueGeneratedNever();
             entity.Property(e => e.FirstName).HasMaxLength(50);
             entity.Property(e => e.LastName).HasMaxLength(50);
             entity.Property(e => e.PhoneNumber).HasMaxLength(50);
@@ -59,46 +56,38 @@ public partial class ChineseBazaarContext : DbContext
 
         modelBuilder.Entity<Category>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Categori__3214EC07049B9685");
-
             entity.Property(e => e.CategoryName).HasMaxLength(50);
         });
 
         modelBuilder.Entity<City>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Cities__3214EC07236398AE");
+            entity.HasKey(e => e.Id).HasName("PK__Cities__3214EC073F6BD028");
 
-            entity.Property(e => e.Name).HasMaxLength(100);
+            entity.Property(e => e.Name)
+                .HasMaxLength(50)
+                .IsUnicode(false);
         });
 
         modelBuilder.Entity<District>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__District__3214EC07DEA82CA9");
+            entity.HasNoKey();
 
-            entity.Property(e => e.Name).HasMaxLength(100);
-
-            entity.HasOne(d => d.City).WithMany(p => p.Districts)
-                .HasForeignKey(d => d.CityId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Districts__CityI__1BC821DD");
+            entity.Property(e => e.Name)
+                .HasMaxLength(100)
+                .IsUnicode(false);
         });
 
         modelBuilder.Entity<Neighborhood>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Neighbor__3214EC07FBD06D81");
+            entity.HasNoKey();
 
-            entity.Property(e => e.Name).HasMaxLength(100);
-
-            entity.HasOne(d => d.District).WithMany(p => p.Neighborhoods)
-                .HasForeignKey(d => d.DistrictId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Neighborh__Distr__1EA48E88");
+            entity.Property(e => e.Name)
+                .HasMaxLength(100)
+                .IsUnicode(false);
         });
 
         modelBuilder.Entity<OperationClaim>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Operatio__3214EC076EA20473");
-
             entity.Property(e => e.Name).HasMaxLength(50);
         });
 
@@ -115,36 +104,20 @@ public partial class ChineseBazaarContext : DbContext
 
         modelBuilder.Entity<Product>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__tmp_ms_x__3214EC079F5CC32A");
-
             entity.Property(e => e.CreatedDate).HasColumnType("datetime");
             entity.Property(e => e.Name).HasMaxLength(50);
             entity.Property(e => e.Price).HasColumnType("money");
         });
 
-        modelBuilder.Entity<Productİmage>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PK__Productİ__3214EC0764E1E139");
-        });
-
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Users__3214EC0750367D56");
-
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
             entity.Property(e => e.Email).HasMaxLength(50);
             entity.Property(e => e.FirstName).HasMaxLength(50);
             entity.Property(e => e.LastName).HasMaxLength(50);
             entity.Property(e => e.PasswordHash).HasMaxLength(500);
             entity.Property(e => e.PasswordSalt).HasMaxLength(500);
-            entity.Property(e => e.UpdatedAt)
-                .HasColumnType("datetime")
-                .HasColumnName("UpdatedAt ");
-        });
-
-        modelBuilder.Entity<UserOperationClaim>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PK__UserOper__3214EC0733791C0C");
+            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
         });
 
         OnModelCreatingPartial(modelBuilder);

@@ -45,17 +45,17 @@ namespace WebAPI.Controllers
                 var userExists = _authService.UserExists(userForRegisterDto.Email);
                 if (!userExists)
                 {
-                    return BadRequest("Kullanıcı Zaten Var");
+                    return BadRequest(new {userAlreadyExist = "Kullanıcı zaten var"});
                 }
 
                 var registerResult = _authService.Register(userForRegisterDto, userForRegisterDto.Password);
                 var result = _authService.CreateAccessToken(registerResult);
                 if (result != null)
                 {
-                    return Ok(result);
+                    return Ok(new { successMessage = "Kayıt Oluşturuldu" });
                 }
 
-                return BadRequest("asdsa");
+                return BadRequest(new {message = "Bir şeyler ters gitti" });
             }
         }
     

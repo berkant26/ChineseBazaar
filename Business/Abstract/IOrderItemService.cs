@@ -10,6 +10,8 @@ namespace Business.Abstract
     public interface IOrderItemService
     {
         void Add(OrderItem orderItem);
-         List<OrderItem> GetOrderItems(int orderId);
+         List<OrderItem> GetAllUserItems(int orderId);
+        List<OrderItem> GetAllOrderItems();
+
     }
 }

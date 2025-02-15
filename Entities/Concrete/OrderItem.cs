@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Entities.Concrete;
 
-public partial class OrderItem : IEntity 
+public partial class OrderItem : IEntity
 {
     public int Id { get; set; }
 

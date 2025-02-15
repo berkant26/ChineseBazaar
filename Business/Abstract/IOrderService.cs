@@ -11,5 +11,8 @@ namespace Business.Abstract
     {
         void Add(Order order);
         Order GetOrder(int userId);
+        List<Order> GetAllUserOrder(int userId);
+        List<Order> GetAllOrder();
+
     }
 }

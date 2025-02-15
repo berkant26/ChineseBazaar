@@ -21,6 +21,18 @@ namespace Business.Concrete
             _orderDal.Add(order);
         }
 
+        // for admin
+        public List<Order> GetAllOrder()
+        {
+            return _orderDal.GetList().ToList();
+        }
+
+        //for user
+        public List<Order> GetAllUserOrder(int userId)
+        {
+            return _orderDal.GetList(o => o.UserId == userId).ToList();
+        }
+
         public Order GetOrder(int userId)
         {
             return _orderDal.Get(o=> o.UserId == userId);

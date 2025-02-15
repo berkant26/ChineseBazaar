@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Entities.Concrete;
 
-public partial class Address : IEntity
+public partial class Address :IEntity
 {
     public int Id { get; set; }
 

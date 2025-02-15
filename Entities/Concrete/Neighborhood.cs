@@ -11,6 +11,4 @@ public partial class Neighborhood : IEntity
     public int DistrictId { get; set; }
 
     public string Name { get; set; } = null!;
-
-    public virtual District District { get; set; } = null!;
 }

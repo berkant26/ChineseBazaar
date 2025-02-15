@@ -6,9 +6,7 @@ namespace Entities.Concrete;
 
 public partial class City : IEntity
 {
+    public string? Name { get; set; }
+
     public int Id { get; set; }
-
-    public string Name { get; set; } = null!;
-
-    public virtual ICollection<District> Districts { get; set; } = new List<District>();
 }

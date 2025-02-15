@@ -43,6 +43,7 @@ namespace WebAPI.Controllers
         [HttpPost("add")]
         public IActionResult Add([FromBody] Product product)
         {
+            product.CreatedDate = DateTime.Now;
             _productService.Add(product);
             return Ok(new { productId = product.Id, message = "Product added successfully" });
         }
